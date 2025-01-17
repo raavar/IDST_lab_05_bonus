@@ -1,6 +1,10 @@
 #!./.venv/bin/python
+
+# Copyright (C) 2025 Robert-Nicolae ZAHARIOIU
+# This program is free software.
  
 import discord      # base discord module
+import argparse	    # argument parsing
 import code         # code.interact
 import os           # environment variables
 import inspect      # call stack inspection
@@ -133,12 +137,26 @@ async def roll_error(ctx, error):
 ################################################################################
 ############################# PROGRAM ENTRY POINT ##############################
 ################################################################################
+
+def get_token():
+    parser = argparse.ArgumentParser(description="Music Bot Command Line Arguments")
+    parser.add_argument(
+        "-t", "--token",
+        type=str,
+        help="Token for the bot. If not provided, the token will be fetched from the environment variable 'BOT_TOKEN'."
+    )
+    args = parser.parse_args()
+    token = args.token or os.getenv("BOT_TOKEN")
+
+    if not token:
+        log_msg("Token is required! Provide it with -t/--token or set the BOT_TOKEN environment variable.", "error")
+        exit(-1)
+
+    return token
  
 if __name__ == '__main__':
-    # check that token exists in environment
-    if 'BOT_TOKEN' not in os.environ:
-        log_msg('save your token in the BOT_TOKEN env variable!', 'error')
-        exit(-1)
+    # check that token exists
+    token = get_token()
  
     # launch bot (blocking operation)
-    bot.run(os.environ['BOT_TOKEN'])
+    bot.run(token)
